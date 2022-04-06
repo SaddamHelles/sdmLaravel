@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\FormsController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FormsController;
 // use App\Http\Controllers\Site1Controller;
 use App\Http\Controllers\Site2Controller;
+use App\Http\Controllers\ProductsController;
 
 
 /*
@@ -66,3 +67,9 @@ Route::get('/testemail', [FormsController::class, 'testemail'])->name('testemail
 
 
 Route::get('/roaapage', 'Site1Controller@post')->name('testroaapage');
+
+
+Route::resource('/products', ProductsController::class);
+
+
+Route::get('testpage/{name}/{id}', [Site2Controller::class, 'printData'])->where(['name' => '[a-z]+', 'id' => '[0-9]+']);

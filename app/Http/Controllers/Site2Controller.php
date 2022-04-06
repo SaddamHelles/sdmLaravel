@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 
 class Site2Controller extends Controller
 {
+    public function printData($name, $id)
+    {
+        return 'Name Is: ' . $name . ' Id Is: ' . $id;
+    }
     public function index()
     {
         $fname = 'Saddam';
