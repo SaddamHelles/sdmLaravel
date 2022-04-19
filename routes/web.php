@@ -5,6 +5,7 @@ use App\Http\Controllers\FormsController;
 // use App\Http\Controllers\Site1Controller;
 use App\Http\Controllers\Site2Controller;
 use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\RelationController;
 
 
 /*
@@ -54,6 +55,7 @@ Route::get('/imageforms', [FormsController::class, 'formsHandleImage'])->name('f
 Route::post('/formsImage', [FormsController::class, 'uploadImage'])->name('form1.uploadImage');
 
 
+
 Route::get('/mailform', [FormsController::class, 'mailform'])->name('formHandleMail');
 Route::post('/formInfoMail', [FormsController::class, 'formInfo_Submit'])->name('formInfo_Submit');
 
@@ -73,3 +75,13 @@ Route::resource('/products', ProductsController::class);
 
 
 Route::get('testpage/{name}/{id}', [Site2Controller::class, 'printData'])->where(['name' => '[a-z]+', 'id' => '[0-9]+']);
+
+
+Route::get('/showmsg', [ProductsController::class, 'showmsg'])->name('showmsg');
+
+
+Route::get('/one-to-one', [RelationController::class, 'oneToOne']);
+
+Route::get('/', function (){
+    return view('index');
+});

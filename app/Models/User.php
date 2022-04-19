@@ -41,4 +41,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function insurance()
+    {
+        $temp =  $this->hasOne(Insurance::class, 'user_id')->withDefault(['name' => 'متوفي']);
+        return $temp->wife;
+    }
 }

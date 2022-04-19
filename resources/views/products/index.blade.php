@@ -23,7 +23,10 @@
     @endif
 
     <div class="container my-5">
-        <h1>All Products</h1>
+        <div class="d-flex justify-content-between align-items-center">
+            <h1>All Products</h1>
+            <a href="{{ route('products.create') }}" class="btn btn-dark px-5">Add New Product</a>
+        </div>
         <div class="my-3 row">
             <div class="col-md-9">
                 <form id="form-search" action="{{ route('products.index') }}" method="get">
@@ -55,8 +58,7 @@
             </div>
             <div class="col-md-1">
                 <select class="form-select" id="PagesId">
-                    <option value="5" {{ request()->perpage == '5' ? 'selected' : '' }}>
-                        5
+                    <option value="5" {{ request()->perpage == '5' ? 'selected' : '' }}> 5
                     </option>
                     <option value="10" {{ request()->perpage == '10' ? 'selected' : '' }}>10
                     </option>
@@ -67,55 +69,83 @@
                 </select>
             </div>
         </div>
-
-
-
-        <table class="table table-striped table-bordered table-hover align-middle">
-            <thead>
-                <tr class="table-dark">
-                    <th scope="col">Id</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Discount</th>
-                    <th scope="col">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($products as $product)
-                    <tr>
-                        <td>{{ $product->id }}</td>
-                        <td>{{ $product->name }}</td>
-                        <td><img width="60px" src="{{ $product->image }}" alt="{{ $product->image }}"></td>
-                        <td>{{ $product->price }}</td>
-                        <td>{{ $product->discount }}</td>
-                        <td>
-                            <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                            <form class="d-inline" action="{{ route('products.destroy', $product->id) }}"
-                                method="POST">
-                                @csrf
-                                {{-- @method('delete') --}}
-                                {{-- <input type="hidden" name="_method" value="delete" /> --}}
-                                {{ method_field('delete') }}
-                                <button onclick="return confirm('هل انت نتاكد من عملية الحذف؟')"
-                                    class="btn btn-danger btn-sm">
-                                    <i class="fa-solid fa-trash"> </i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-
-            </tbody>
-        </table>
-        {{ $products->appends($_GET)->links() }}
+        <div class="table-content">
+            @include('products.ProductsTable');
+        </div>
+        <a href="#" id="btnMsg">Get Value Form Server Side</a>
+        <p id="LableMsg">Msg</p>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script>
+
+
+        $('#btnMsg').click(function(event){
+            event.preventDefault();
+
+            $.ajax({
+                type: "GET",
+                url: "{{ route('showmsg') }}",
+                success: function(data){
+                    $('#LableMsg').text(data);
+                }
+            })
+        });
+        $('input[name = txtSearch]').keyup(function(event){
+            event.preventDefault();
+            let myurl = $(this).parents('form').serialize();
+            
+            $.ajax({
+                type: "GET",
+                url: "{{ route('products.index') }}",
+                data: myurl,
+                success: function(res){
+                    console.log(res);
+                    $('.table-content').html(res);
+                }
+            })
+            
+        });
         $(document).ready(function() {
+
+
+            $('.btn-delete').click(function(e){
+                e.preventDefault();
+                let delete_url = $(this).attr('href');
+                let myObject = this;
+                let emptyTbody = `<tr>
+                                 <td colspan="6" class="text-center">No Data Found</td>
+                                 </tr>`;
+
+                // console.log($('table tbody tr').length);
+                
+                if(confirm('Are you sure??')){
+                    $.ajax({
+                        type: "post",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            _method: "delete"
+                        },
+                        url: delete_url,
+                        success: function(res){
+                            $(myObject).parent().parent().remove();
+                            console.log('SDM ' + res);
+                            if($('table tbody tr').length == 0){
+                                $('table tbody').append(emptyTbody);
+                            }
+                            // Toast.fire({
+                            //     icons: 'success',
+                            //     title: res
+                            // });
+                            //console.log(res);
+                            $('#LableMsg').text(res);
+                        }
+                })}
+                // console.log(delete_url);
+                //alert('Delete Btn');
+            })
+        
             // $('table').DataTable();
             $('#ddlSortId').change(function() {
                 var sortValue = $(this).val();
@@ -132,7 +162,8 @@
 </body>
 
 </html>
-{{-- <tr>
+
+ <!-- <tr>
             <td>1</td>
             <td>ABC</td>
             <td>hello.jpg</td>
@@ -186,4 +217,5 @@
                 <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                 <a href="#" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
             </td>
-        </tr> --}}
+        </tr> 
+         -->
